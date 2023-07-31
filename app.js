@@ -8,36 +8,42 @@ const rl = readline.createInterface({
 const tasks = [];
 
 function addTask() {
-  rl.question('Indicador de la tarea: ', (indicator) => {
-    rl.question('Descripción de la tarea: ', (description) => {
-      tasks.push({ indicator, description, completed: false });
-      console.log('Tarea agregada con éxito.');
-      displayMenu();
+  return new Promise((resolve) => {
+    rl.question('Indicador de la tarea: ', (indicator) => {
+      rl.question('Descripción de la tarea: ', (description) => {
+        tasks.push({ indicator, description, completed: false });
+        console.log('Tarea agregada con éxito.');
+        resolve();
+      });
     });
   });
 }
 
 function removeTask() {
-  rl.question('Índice de la tarea a eliminar: ', (index) => {
-    if (index >= 0 && index < tasks.length) {
-      tasks.splice(index, 1);
-      console.log('Tarea eliminada con éxito.');
-    } else {
-      console.log('¡Índice de tarea inválido!');
-    }
-    displayMenu();
+  return new Promise((resolve) => {
+    rl.question('Índice de la tarea a eliminar: ', (index) => {
+      if (index >= 0 && index < tasks.length) {
+        tasks.splice(index, 1);
+        console.log('Tarea eliminada con éxito.');
+      } else {
+        console.log('¡Índice de tarea inválido!');
+      }
+      resolve();
+    });
   });
 }
 
 function completeTask() {
-  rl.question('Índice de la tarea completada: ', (index) => {
-    if (index >= 0 && index < tasks.length) {
-      tasks[index].completed = true;
-      console.log('Tarea completada con éxito.');
-    } else {
-      console.log('¡Índice de tarea inválido!');
-    }
-    displayMenu();
+  return new Promise((resolve) => {
+    rl.question('Índice de la tarea completada: ', (index) => {
+      if (index >= 0 && index < tasks.length) {
+        tasks[index].completed = true;
+        console.log('Tarea completada con éxito.');
+      } else {
+        console.log('¡Índice de tarea inválido!');
+      }
+      resolve();
+    });
   });
 }
 
@@ -47,7 +53,6 @@ function displayTasks() {
     const status = task.completed ? 'Completada' : 'Pendiente';
     console.log(`${index}. [${status}] ${task.indicator}: ${task.description}`);
   });
-  displayMenu();
 }
 
 function displayMenu() {
@@ -61,16 +66,20 @@ function displayMenu() {
   rl.question('Elije una opción: ', (option) => {
     switch (option) {
       case '1':
-        addTask();
+        addTask()
+          .then(displayMenu);
         break;
       case '2':
-        removeTask();
+        removeTask()
+          .then(displayMenu);
         break;
       case '3':
-        completeTask();
+        completeTask()
+          .then(displayMenu);
         break;
       case '4':
         displayTasks();
+        displayMenu();
         break;
       case '5':
         rl.close();
